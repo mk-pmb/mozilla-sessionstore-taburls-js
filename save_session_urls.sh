@@ -11,7 +11,7 @@ function firefox_save_session_urls () {
   local FF_PIDS="$(
     ps --no-headers -o pid -C firefox | grep -oPe '\d+' | sort --numeric-sort)"
   [ -n "$FF_PIDS" ] || return 0
-  local FIRST_PID="${FF_PIDS%%$'\n'}"
+  local FIRST_PID="${FF_PIDS%%$'\n'*}"
   FF_PIDS="${FF_PIDS//$'\n'/_}"
   local SAVE_DIR="$HOME/.cache/mozilla/session-urls"
   mkdir --parents -- "$SAVE_DIR" || return $?

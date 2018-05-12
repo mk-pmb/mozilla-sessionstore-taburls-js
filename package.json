@@ -1,5 +1,5 @@
 { "name": "mozilla-sessionstore-taburls",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Extract the URLs of currently open tabs from a Firefox sessionstore backup.",
   "keywords": [ "firefox", "session" ],
 
