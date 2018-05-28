@@ -20,7 +20,11 @@ function firefox_save_session_urls () {
 
   local CUR_PROFILE="$(find /proc/"$FIRST_PID"/fd \
     -type l -lname '*/places.sqlite' \
-    -xtype f -printf '%l\n' | head -n 1)"
+    -xtype f -printf '%l\n' \
+    2>/dev/null | head -n 1)"
+    # ^-- mute because find sometimes reports an error "file not found",
+    #     probably a race condition caused by firefox closing the fd
+    #     while find checks it.
   CUR_PROFILE="$(dirname "$CUR_PROFILE")"
   local LZ4="$CUR_PROFILE"/sessionstore-backups/recovery.jsonlz4
   [ -f "$LZ4" ] || return 3$(
