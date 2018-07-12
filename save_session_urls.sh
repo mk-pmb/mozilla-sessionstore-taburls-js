@@ -52,6 +52,16 @@ function safe_save () {
   [ ! -e "$DEST$FEXT" ] || mv --no-target-directory \
     -- "$DEST"{,.bak}"$FEXT" || return $?
   mv --no-target-directory -- "$TMPFN" "$DEST$FEXT" || return $?
+  local LATEST="$MOZURLS_LATEST"
+  if [ -n "$LATEST" ]; then
+    case "$LATEST" in
+      /* ) ;;
+      '~'/* ) LATEST="$HOME${LATEST:1}";;
+      * ) LATEST="$SAVE_DIR/$LATEST";;
+    esac
+    [ -L "$LATEST" ] && rm -- "$LATEST"
+    ln --symbolic --no-target-directory -- "$DEST$FEXT" "$LATEST" || return $?
+  fi
   return 0
 }
 
