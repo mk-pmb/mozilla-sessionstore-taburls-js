@@ -38,9 +38,15 @@ function firefox_save_session_urls () {
     )
   local TABS="$(<"$LZ4" nodejs "${PARSE[@]}")"
   [ -n "$TABS" ] || return 8$(echo "E: found no tab URLs" >&2)
-  echo "$TABS"
-  <<<"$TABS" safe_save "$SAVE_FILE".urls .txt || return $?
-  return $?
+
+  if [ -n "$MOZURLS_SED" ]; then
+    TABS="$(<<<"$TABS" sed -rf <(echo -E "$MOZURLS_SED"))" || return $?
+  fi
+
+  if [ -n "$TABS" ]; then
+    echo -E "$TABS"
+    <<<"$TABS" safe_save "$SAVE_FILE".urls .txt || return $?
+  fi
 }
 
 
@@ -52,6 +58,7 @@ function safe_save () {
   [ ! -e "$DEST$FEXT" ] || mv --no-target-directory \
     -- "$DEST"{,.bak}"$FEXT" || return $?
   mv --no-target-directory -- "$TMPFN" "$DEST$FEXT" || return $?
+
   local LATEST="$MOZURLS_LATEST"
   if [ -n "$LATEST" ]; then
     case "$LATEST" in
@@ -62,7 +69,6 @@ function safe_save () {
     [ -L "$LATEST" ] && rm -- "$LATEST"
     ln --symbolic --no-target-directory -- "$DEST$FEXT" "$LATEST" || return $?
   fi
-  return 0
 }
 
 
